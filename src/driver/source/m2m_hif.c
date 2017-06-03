@@ -663,7 +663,7 @@ sint8 hif_handle_isr(void)
 		}
 	}
     if (ret == M2M_SUCCESS) {
-        (*(volatile unsigned char *)(0XC6)) = '&';
+        //(*(volatile unsigned char *)(0XC6)) = '&';
     }
     else
     {
