@@ -76,7 +76,11 @@ uint8_t WiFiUDP::begin(uint16_t port)
 	if (bind(_socket, (struct sockaddr *)&addr, sizeof(struct sockaddr_in)) < 0) {
 		close(_socket);
 		_socket = -1;
-		return 0;
+    if (_flag > 0) {
+        Serial.println("WiFiUDP::begin: IS_CONNECTED is false, and flag is > 0, setting flag to 0!!!");
+        _flag = 0;
+    }
+    return 0;
 	}
 	
 	// Wait for connection or timeout:
@@ -87,11 +91,17 @@ uint8_t WiFiUDP::begin(uint16_t port)
 	if (!READY) {
 		close(_socket);
 		_socket = -1;
-		return 0;
+    if (_flag > 0) {
+        Serial.println("WiFiUDP::begin: IS_CONNECTED is false, and flag is > 0, setting flag to 0!!!");
+        _flag = 0;
+    }
+    return 0;
 	}
 	_flag &= ~SOCKET_BUFFER_FLAG_BIND;
 
-	return 1;
+  Serial.print("WiFiUDP::begin: Connected with Socket number: ");
+  Serial.println(_socket);
+  return 1;
 }
 
 uint8_t WiFiUDP::beginMulticast(IPAddress ip, uint16_t port)

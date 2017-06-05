@@ -172,7 +172,9 @@ int WiFiClient::connect(IPAddress ip, uint16_t port, uint8_t opt, const uint8_t 
     return 0;
 	}
 
-	WiFi._client[_socket] = this;
+  Serial.print("WiFiClient::connect: Connected with Socket number: ");
+  Serial.println(_socket);
+  WiFi._client[_socket] = this;
 
 	return 1;
 }
