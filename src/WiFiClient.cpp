@@ -201,7 +201,7 @@ size_t WiFiClient::write(const uint8_t *buf, size_t size)
 
     unsigned long start = millis();
   
-    while (((err = send(_socket, (void *)buf, size, 0)) < 0) && (millis() - start) < 5000) {
+    while (((err = send(_socket, (void *)buf, size, 0)) < 0) && (millis() - start) < 60000) {
 		// Exit on fatal error, retry if buffer not ready, but only for some seconds
 		if (err != SOCK_ERR_BUFFER_FULL) {
 			setWriteError();
@@ -209,17 +209,20 @@ size_t WiFiClient::write(const uint8_t *buf, size_t size)
 			m2m_periph_gpio_set_val(M2M_PERIPH_GPIO5, 1);
             // this->stop(); ToDo for testing purposes // Close connection when write did not work
             return 0;
-		}
-		m2m_wifi_handle_events(NULL);
-	}
+		  }
+		  m2m_wifi_handle_events(NULL);
+	  }
 
-  if ((millis() - start) >= 5000)
-  {
-    Serial.println("WiFiClient::write: Sending Buffer took more than 5 seconds, closing connection!!!");
-    setWriteError();
-    // this->stop(); ToDo for testing purposes // Close connection when write did not work
-    return 0;
-  }
+    if ((millis() - start) >= 5000)
+    {
+        Serial.print("WiFiClient::write: Sending Buffer took more than 5 seconds!!! Duration: ");
+        Serial.println((millis() - start));
+        Serial.print("!IS_CONNECTED: ");
+        Serial.println(IS_CONNECTED);
+        setWriteError();
+        // this->stop(); ToDo for testing purposes // Close connection when write did not work
+        return 0;
+    }
 
 	// Network led OFF (rev A then rev B).
 	m2m_periph_gpio_set_val(M2M_PERIPH_GPIO16, 1);
