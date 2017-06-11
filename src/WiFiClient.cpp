@@ -207,7 +207,7 @@ size_t WiFiClient::write(const uint8_t *buf, size_t size)
 			setWriteError();
 			m2m_periph_gpio_set_val(M2M_PERIPH_GPIO16, 1);
 			m2m_periph_gpio_set_val(M2M_PERIPH_GPIO5, 1);
-            // this->stop(); ToDo for testing purposes // Close connection when write did not work
+            this->stop();
             return 0;
 		  }
 		  m2m_wifi_handle_events(NULL);
@@ -217,10 +217,8 @@ size_t WiFiClient::write(const uint8_t *buf, size_t size)
     {
         Serial.print("WiFiClient::write: Sending Buffer took more than 5 seconds!!! Duration: ");
         Serial.println((millis() - start));
-        Serial.print("!IS_CONNECTED: ");
+        Serial.print("!!!IS_CONNECTED: ");
         Serial.println(IS_CONNECTED);
-        setWriteError();
-        // this->stop(); ToDo for testing purposes // Close connection when write did not work
         return 0;
     }
 
