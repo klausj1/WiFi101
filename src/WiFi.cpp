@@ -654,7 +654,38 @@ void WiFiClass::hostname(const char* name)
 
 void WiFiClass::disconnect()
 {
-	m2m_wifi_disconnect();
+    for (int i = 0; i < TCP_SOCK_MAX; i++) {
+        if (WiFi._client[i])
+        {
+            Serial.print("WiFiClass::disconnect(): Client Nr. ");
+            Serial.print(i);
+            Serial.print(" is active, client will be stopped. Socket number: ");
+            Serial.print(WiFi._client[i]->_socket);
+            Serial.print(" Flag: ");
+            Serial.println(WiFi._client[i]->_flag);
+            WiFi._client[i]->stop();
+        }
+    }
+
+	sint8 rc = m2m_wifi_disconnect();
+
+  if (rc > 0)
+  {
+      Serial.print("WiFiClass::disconnect: Error in disconnect!!! rc: ");
+      Serial.println(rc);
+  }
+
+  unsigned long start = millis();
+  while (!(_status & WL_DISCONNECTED) &&
+      (millis() - start < 10000)) {
+      m2m_wifi_handle_events(NULL);
+  }
+
+  if (!(_status & WL_DISCONNECTED))
+  {
+      Serial.print("WiFiClass::disconnect: Could not disconnect!!! ");
+      Serial.println(rc);
+  }
 
 	// WiFi led OFF (rev A then rev B).
 	m2m_periph_gpio_set_val(M2M_PERIPH_GPIO15, 1);
@@ -670,8 +701,19 @@ void WiFiClass::end()
 			m2m_wifi_stop_provision_mode();
 		}
 
-		m2m_wifi_disconnect();
-	}
+    for (int i = 0; i < TCP_SOCK_MAX; i++) {
+        if (WiFi._client[i])
+            WiFi._client[i]->stop();
+    }
+
+    sint8 rc = m2m_wifi_disconnect();
+
+    if (rc > 0)
+    {
+        Serial.print("WiFiClass::disconnect: Error in disconnect!!! rc: ");
+        Serial.println(rc);
+    }
+  }
 
 	// WiFi led OFF (rev A then rev B).
 	m2m_periph_gpio_set_val(M2M_PERIPH_GPIO15, 1);

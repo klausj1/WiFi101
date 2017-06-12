@@ -52,10 +52,10 @@ public:
 
 	using Print::write;
 
+  SOCKET _socket;// ToDo: Only for debugging
 	uint32_t _flag;
 
 private:
-	SOCKET _socket;
 	uint32_t _head;
 	uint32_t _tail;
 	uint8_t	_buffer[SOCKET_BUFFER_TCP_SIZE];

@@ -558,8 +558,9 @@ sint8 m2m_wifi_handle_events(void * arg)
 	/* all sockets, anytime. */
 	for (i = 0; i < MAX_SOCKET; ++i) {
 		if (gastrSocketBuffer[i].flag && (*(gastrSocketBuffer[i].flag) & SOCKET_BUFFER_FLAG_FULL)) {
-      (*(volatile unsigned char *)(0XC6)) = '$';
-      return M2M_ERR_FAIL;
+        //(*(volatile unsigned char *)(0XC6)) = '$';
+        (*(volatile unsigned char *)(0XC6)) = ('0' + i);
+        return M2M_ERR_FAIL;
 		}
 	}
 #endif

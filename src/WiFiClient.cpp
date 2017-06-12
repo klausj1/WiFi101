@@ -148,12 +148,13 @@ int WiFiClient::connect(IPAddress ip, uint16_t port, uint8_t opt, const uint8_t 
 
 	// Connect to remote host:
 	if (connectSocket(_socket, (struct sockaddr *)&addr, sizeof(struct sockaddr_in)) < 0) {
-		close(_socket);
+      close(_socket);
+      if (_flag > 0) {
+          Serial.print("WiFiClient::connect: connectSocket() failed, and flag is > 0, setting flag to 0!!! Socket: ");
+          Serial.println(_socket);
+          _flag = 0;
+      }
 		_socket = -1;
-        if (_flag > 0) {
-            Serial.println("WiFiClient::connect: connectSocket() failed, and flag is > 0, setting flag to 0!!!");
-            _flag = 0;
-        }
 		return 0;
 	}
 
@@ -164,12 +165,13 @@ int WiFiClient::connect(IPAddress ip, uint16_t port, uint8_t opt, const uint8_t 
 	}
 	if (!IS_CONNECTED) {
 		close(_socket);
-		_socket = -1;
         if (_flag > 0) {
-            Serial.println("WiFiClient::connect: IS_CONNECTED is false, and flag is > 0, setting flag to 0!!!");
+            Serial.print("WiFiClient::connect: IS_CONNECTED is false, and flag is > 0, setting flag to 0!!! Socket: ");
+            Serial.println(_socket);
             _flag = 0;
         }
-    return 0;
+        _socket = -1;
+        return 0;
 	}
 
   Serial.print("WiFiClient::connect: Connected with Socket number: ");
@@ -294,9 +296,11 @@ void WiFiClient::flush()
 
 void WiFiClient::stop()
 {
+    Serial.print("WiFiClient::stop: Stopping socket ");
+    Serial.println(_socket);
     if ((_socket < 0) && (_flag > 0))
     {
-        Serial.println("WiFiClient::stop: socket is <0, but flag is >0. This is not allowed!!! Setting _flag to 0");
+        Serial.println("WiFiClient::stop: socket is <0, but flag is >0. This is not allowed!!! Setting _flag to 0.");
         _flag = 0;
         return;
     }
