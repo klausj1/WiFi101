@@ -669,22 +669,22 @@ void WiFiClass::disconnect()
 
 	sint8 rc = m2m_wifi_disconnect();
 
-  if (rc > 0)
+  if (rc != 0)
   {
       Serial.print("WiFiClass::disconnect: Error in disconnect!!! rc: ");
       Serial.println(rc);
   }
 
   unsigned long start = millis();
-  while (!(_status & WL_DISCONNECTED) &&
+
+  while ((_status != WL_DISCONNECTED) &&
       (millis() - start < 10000)) {
       m2m_wifi_handle_events(NULL);
   }
 
-  if (!(_status & WL_DISCONNECTED))
+  if (_status != WL_DISCONNECTED)
   {
-      Serial.print("WiFiClass::disconnect: Could not disconnect!!! ");
-      Serial.println(rc);
+      Serial.println("WiFiClass::disconnect: Could not disconnect!!!");
   }
 
 	// WiFi led OFF (rev A then rev B).
